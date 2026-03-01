@@ -41,9 +41,8 @@ const postRegister = async (req, res) => {
 };
 
 const getLogout = (req, res) => {
-    req.session.destroy(err => {
-        res.redirect('/auth/login');
-    });
+    req.session = null;
+    res.redirect('/auth/login');
 };
 
 module.exports = {
