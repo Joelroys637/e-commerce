@@ -3,12 +3,12 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
 const admin = require('firebase-admin');
-
+const serverless = require("serverless-http");
 // Load env vars
 dotenv.config();
 
 // First, initialize Firebase Admin
-// We require a serviceAccountKey.json or for the user to be authenticated in GCP
+// We require a serviceAccountKey.json or for the user to be authenticapp.listenated in GCP
 try {
   let credentialSettings;
 
@@ -84,8 +84,4 @@ app.use((req, res) => {
   res.status(404).render('user/404', { pageTitle: 'Page Not Found' });
 });
 
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
