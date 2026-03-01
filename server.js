@@ -4,7 +4,6 @@ const cookieSession = require('cookie-session');
 const dotenv = require('dotenv');
 const path = require('path');
 const admin = require('firebase-admin');
-const serverless = require("serverless-http");
 // Load env vars
 dotenv.config();
 
@@ -29,19 +28,22 @@ try {
       credentialSettings = admin.credential.cert(serviceAccount);
     } catch (err) {
       console.warn("WARNING: 'serviceAccountKey.json' not found and Firebase env vars missing.");
-      console.warn("Falling back to application default credentials.");
-      credentialSettings = admin.credential.applicationDefault();
+      throw new Error("Missing Firebase credentials! Either provide serviceAccountKey.json or set FIREBASE_ environment variables.");
     }
   }
 
   admin.initializeApp({
     credential: credentialSettings,
-    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+    projectId: process.env.FIREBASE_PROJECT_ID || (credentialSettings && credentialSettings.projectId) || 'e-commerce-a5515',
+    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID || 'e-commerce-a5515'}-default-rtdb.firebaseio.com`,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'e-commerce-a5515.firebasestorage.app'
   });
   console.log("Firebase Admin initialized successfully.");
 } catch (e) {
-  console.error("Firebase Admin initialization failed:", e);
+  console.error("Firebase Admin initialization failed:", e.message);
+  // It's usually better to exit the process if critical services can't load
+  // rather than crashing silently later on route calls.
+  // process.exit(1); 
 }
 
 const app = express();
@@ -84,5 +86,12 @@ app.use('/', userRoutes);
 app.use((req, res) => {
   res.status(404).render('user/404', { pageTitle: 'Page Not Found' });
 });
-module.exports = serverless(app);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+module.exports = app;
 
