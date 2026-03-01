@@ -1,5 +1,6 @@
 const express = require('express');
-const session = require('express-session');
+const cookieSession = require('cookie-session');
+
 const dotenv = require('dotenv');
 const path = require('path');
 const admin = require('firebase-admin');
@@ -50,10 +51,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Session
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
-  resave: false,
-  saveUninitialized: false,
+app.use(cookieSession({
+  name: 'session',
+  keys: [process.env.SESSION_SECRET || 'secret'],
+  maxAge: 24 * 60 * 60 * 1000
 }));
 
 // EJS setup
