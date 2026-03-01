@@ -1,0 +1,43 @@
+<%- include('../partials/header.ejs', { pageTitle: 'Home' }) %>
+
+    <div style="text-align: center; margin: 3rem 0;">
+        <h1 style="font-size: 3rem; font-weight: 800; color: var(--text-main);">Welcome to <span
+                style="color: var(--primary);">Joelx Orbit E-Commerce</span></h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 1rem;">Discover amazing products with massive
+            offers. Start shopping today!</p>
+        <a href="/products" class="btn btn-primary"
+            style="color: white; padding: 1rem 2rem; font-size: 1.1rem; margin-top: 2rem;">Shop Now</a>
+    </div>
+
+    <h2 style="margin-top: 4rem; border-left: 4px solid var(--primary); padding-left: 1rem;">Featured Products</h2>
+
+    <div class="product-grid">
+        <% products.forEach(product=> { %>
+            <div class="product-card">
+                <img src="<%= product.uploadimage %>" alt="<%= product.name %>" class="product-img">
+                <div class="product-info">
+                    <div class="product-category">
+                        <%= product.category %>
+                    </div>
+                    <div class="product-title">
+                        <%= product.name %>
+                    </div>
+
+                    <div class="price-container">
+                        <div class="price">₹<%= product.price %>
+                        </div>
+                        <% if (product.offer> 0) { %>
+                            <div class="offer">
+                                <%= product.offer %>% OFF
+                            </div>
+                            <% } %>
+                    </div>
+
+                    <a href="/product/<%= product.productId %>" class="btn btn-primary"
+                        style="width: 100%; color: white;">View Details</a>
+                </div>
+            </div>
+            <% }) %>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>

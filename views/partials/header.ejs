@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= typeof pageTitle !=='undefined' ? pageTitle + ' - E-commerce' : 'E-commerce Store' %>
+  </title>
+  <link rel="stylesheet" href="/css/style.css">
+  <meta name="description" content="Premium E-commerce platform for all your needs.">
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">Joelx Orbit</a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/products">Products</a></li>
+
+      <% if (user) { %>
+        <li><a href="/my-orders">My Orders</a></li>
+        <% if (isAdmin) { %>
+          <li><a href="/admin/dashboard" class="btn btn-primary" style="color:white;">Admin Panel</a></li>
+          <% } %>
+            <li><span>Hey, <%= user.name %></span></li>
+            <li><a href="/auth/logout" class="btn btn-danger" style="color:white; padding: 0.4rem 0.8rem;">Logout</a>
+            </li>
+            <% } else { %>
+              <li><a href="/auth/login">Login</a></li>
+              <li><a href="/auth/register" class="btn btn-primary" style="color:white;">Sign Up</a></li>
+              <% } %>
+    </ul>
+  </nav>
+  <main>

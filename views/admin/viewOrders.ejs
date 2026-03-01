@@ -1,0 +1,73 @@
+<%- include('../partials/header.ejs', { pageTitle: 'View All Orders' }) %>
+
+    <div class="admin-layout" style="margin-top: 2rem;">
+        <%- include('../partials/admin-sidebar.ejs') %>
+
+            <div class="admin-content" style="overflow-x: auto;">
+                <h2 style="margin-bottom: 2rem;">All Customer Orders</h2>
+
+                <% if (orders.length===0) { %>
+                    <p>No orders have been placed yet.</p>
+                    <% } else { %>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order Ref</th>
+                                    <th>Customer Details</th>
+                                    <th>Product ID</th>
+                                    <th>Qty</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                    <th>Placed At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(order=> { %>
+                                    <tr>
+                                        <td
+                                            style="font-family: monospace; font-size: 0.9rem; color: var(--text-muted);">
+                                            <%= order.orderId %>
+                                        </td>
+                                        <td style="font-size: 0.9rem;">
+                                            <div><strong>Name:</strong>
+                                                <%= order.userName || 'N/A' %>
+                                            </div>
+                                            <div><strong>Mobile:</strong>
+                                                <%= order.mobileNumber || 'N/A' %>
+                                            </div>
+                                            <div><strong>Location:</strong>
+                                                <%= order.location || 'N/A' %>
+                                            </div>
+                                            <div><strong>Address:</strong>
+                                                <%= order.address || 'N/A' %>
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: #6b7280;">ID: <%= order.userId %>
+                                            </div>
+                                        </td>
+                                        <td style="font-size: 0.9rem;">
+                                            <%= order.productId %>
+                                        </td>
+                                        <td>
+                                            <%= order.quantity %>
+                                        </td>
+                                        <td style="font-weight: bold; color: var(--primary);">
+                                            ₹<%= order.totalPrice || 0 %>
+                                        </td>
+                                        <td>
+                                            <span
+                                                style="background: #dbeafe; color: #1e40af; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+                                                <%= order.orderStatus %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <%= new Date(order.timestamp).toLocaleString() %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } %>
+            </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>

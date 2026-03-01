@@ -1,0 +1,29 @@
+<%- include('../partials/header.ejs', { pageTitle: 'Admin Dashboard' }) %>
+
+    <div class="admin-layout" style="margin-top: 2rem;">
+        <%- include('../partials/admin-sidebar.ejs') %>
+
+            <div class="admin-content">
+                <h2 style="margin-bottom: 2rem;">Overview Dashboard</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                    <div
+                        style="background: #eff6ff; border-radius: var(--border-radius); padding: 2rem; border-left: 5px solid var(--primary);">
+                        <h3 style="color: #1e3a8a; margin-bottom: 1rem;">Total Products</h3>
+                        <p style="font-size: 3rem; font-weight: 700; color: var(--primary);">
+                            <%= productsCount %>
+                        </p>
+                    </div>
+
+                    <div
+                        style="background: #fdf4ff; border-radius: var(--border-radius); padding: 2rem; border-left: 5px solid #d946ef;">
+                        <h3 style="color: #701a75; margin-bottom: 1rem;">Total Orders</h3>
+                        <p style="font-size: 3rem; font-weight: 700; color: #d946ef;">
+                            <%= ordersCount %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>

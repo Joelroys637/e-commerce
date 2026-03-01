@@ -1,0 +1,59 @@
+<%- include('../partials/header.ejs', { pageTitle: 'All Products' }) %>
+
+    <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="border-left: 4px solid var(--primary); padding-left: 1rem; margin: 0;">All Products</h2>
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by product name..."
+            style="max-width: 300px;">
+    </div>
+
+    <div class="product-grid" id="productGrid">
+        <% if (products.length===0) { %>
+            <p>No products available yet. Check back later!</p>
+            <% } else { %>
+                <% products.forEach(product=> { %>
+                    <div class="product-card">
+                        <img src="<%= product.uploadimage %>" alt="<%= product.name %>" class="product-img">
+                        <div class="product-info">
+                            <div class="product-category">
+                                <%= product.category %>
+                            </div>
+                            <div class="product-title">
+                                <%= product.name %>
+                            </div>
+
+                            <div class="price-container">
+                                <div class="price">₹<%= product.price %>
+                                </div>
+                                <% if (product.offer> 0) { %>
+                                    <div class="offer">
+                                        <%= product.offer %>% OFF
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <a href="/product/<%= product.productId %>" class="btn btn-primary"
+                                style="width: 100%; color: white;">View Details</a>
+                        </div>
+                    </div>
+                    <% }) %>
+                        <% } %>
+    </div>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').innerText.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    product.style.display = 'flex'; // or keep original display, usually block or flex
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+    <%- include('../partials/footer.ejs') %>
