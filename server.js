@@ -83,5 +83,5 @@ app.use('/', userRoutes);
 app.use((req, res) => {
   res.status(404).render('user/404', { pageTitle: 'Page Not Found' });
 });
-
+module.exports = serverless(app);
 
