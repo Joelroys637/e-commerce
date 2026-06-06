@@ -8,13 +8,21 @@
     <%= typeof pageTitle !=='undefined' ? pageTitle + ' - E-commerce' : 'E-commerce Store' %>
   </title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta name="description" content="Premium E-commerce platform for all your needs.">
 </head>
 
 <body>
   <nav class="navbar">
-    <a href="/" class="nav-brand">Joelx Orbit</a>
-    <ul class="nav-links">
+    <div class="nav-header">
+      <a href="/" class="nav-brand">Joelx Orbit</a>
+      <button class="menu-toggle" id="mobile-menu" aria-label="Toggle Menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/products">Products</a></li>
 
@@ -32,4 +40,16 @@
               <% } %>
     </ul>
   </nav>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenu = document.getElementById('mobile-menu');
+      const navLinks = document.getElementById('nav-links');
+      
+      mobileMenu.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        mobileMenu.classList.toggle('is-active');
+      });
+    });
+  </script>
   <main>

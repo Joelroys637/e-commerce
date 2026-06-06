@@ -6,7 +6,7 @@
             <div class="admin-content">
                 <h2 style="margin-bottom: 2rem;">Overview Dashboard</h2>
 
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                <div class="dashboard-stats">
                     <div
                         style="background: #eff6ff; border-radius: var(--border-radius); padding: 2rem; border-left: 5px solid var(--primary);">
                         <h3 style="color: #1e3a8a; margin-bottom: 1rem;">Total Products</h3>
@@ -23,7 +23,49 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Graph Section -->
+                <div style="margin-top: 3rem; background: #ffffff; padding: 2rem; border-radius: var(--border-radius); border: 1px solid #e5e7eb;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Sales & Products Overview</h3>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="overviewChart"></canvas>
+                    </div>
+                </div>
             </div>
     </div>
+
+    <!-- Chart.js for Graph Information -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const ctx = document.getElementById('overviewChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Products Added',
+                    data: [2, 3, 1, 4, 2, Number("<%= productsCount %>")],
+                    backgroundColor: 'rgba(37, 99, 235, 0.5)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Orders Placed',
+                    data: [5, 2, 8, 3, 6, Number("<%= ordersCount %>")],
+                    backgroundColor: 'rgba(217, 70, 239, 0.5)',
+                    borderColor: 'rgba(217, 70, 239, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
     <%- include('../partials/footer.ejs') %>

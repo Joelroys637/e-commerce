@@ -13,7 +13,7 @@ const createOrder = async (userId, productId, quantity, orderDetails) => {
         address: orderDetails.address || '',
         mobileNumber: orderDetails.mobileNumber || '',
         totalPrice: orderDetails.totalPrice || 0,
-        orderStatus: 'Placed (COD)',
+        orderStatus: orderDetails.orderStatus || 'Placed (COD)',
         timestamp: Date.now()
     };
 

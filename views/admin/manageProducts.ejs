@@ -4,9 +4,9 @@
         <%- include('../partials/admin-sidebar.ejs') %>
 
             <div class="admin-content" style="overflow-x: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h2>Manage Products</h2>
-                    <a href="/admin/add-product" class="btn btn-primary" style="color: white;">+ Add New</a>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                    <h2 style="margin: 0;">Manage Products</h2>
+                    <a href="/admin/add-product" class="btn btn-primary" style="color: white; white-space: nowrap;">+ Add New</a>
                 </div>
 
                 <% if (products.length===0) { %>

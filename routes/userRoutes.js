@@ -11,4 +11,8 @@ router.get('/product/:id', userController.getProductDetails);
 router.post('/place-order', isAuthenticated, userController.postPlaceOrder);
 router.get('/my-orders', isAuthenticated, userController.getMyOrders);
 
+// Razorpay Routes
+router.post('/create-razorpay-order', isAuthenticated, userController.createRazorpayOrder);
+router.post('/verify-payment', isAuthenticated, userController.verifyPayment);
+
 module.exports = router;
