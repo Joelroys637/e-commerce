@@ -1,0 +1,326 @@
+<%- include('../partials/header.ejs', { pageTitle: 'Cart & Favorites' }) %>
+
+<div class="cart-dashboard">
+    <aside class="cart-sidebar">
+        <ul class="cart-menu">
+            <li class="active" onclick="switchTab('cart')">
+                <i class="fas fa-shopping-cart"></i> Cart List
+            </li>
+            <li onclick="switchTab('favorites')">
+                <i class="fas fa-heart"></i> Favorite List
+            </li>
+        </ul>
+    </aside>
+
+    <main class="cart-content">
+        <!-- Cart Section -->
+        <section id="cart-section" class="tab-content active">
+            <h2>Your Cart</h2>
+            <% if (cartItems.length === 0) { %>
+                <p>Your cart is empty.</p>
+            <% } else { %>
+                <div class="cart-items">
+                    <% cartItems.forEach(item => { %>
+                        <div class="cart-item">
+                            <img src="<%= item.uploadimage %>" alt="<%= item.name %>">
+                            <div class="item-info">
+                                <h3><%= item.name %></h3>
+                                <p class="price" style="font-weight:bold; font-size:1.2rem; color:var(--primary);">₹<%= item.price %></p>
+                                <div class="qty-control">
+                                    <button onclick="updateQty('<%= item.productId %>', -1)">-</button>
+                                    <input type="number" id="qty-<%= item.productId %>" value="<%= item.quantity %>" readonly>
+                                    <button onclick="updateQty('<%= item.productId %>', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn btn-danger" style="padding:0.5rem 1rem;" onclick="removeFromCart('<%= item.productId %>')">Remove</button>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end;">
+                    <button id="checkout-cart-btn" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem; box-shadow: var(--shadow-lg); background: #1e3a8a;">
+                        💳 Checkout All Items
+                    </button>
+                </div>
+            <% } %>
+        </section>
+
+        <!-- Favorites Section -->
+        <section id="favorites-section" class="tab-content">
+            <h2>Your Favorites</h2>
+            <% if (favoriteItems.length === 0) { %>
+                <p>You haven't saved any favorites yet.</p>
+            <% } else { %>
+                <div class="product-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <% favoriteItems.forEach(item => { %>
+                        <div class="product-card" style="margin: 0; width: 100%;">
+                            <button class="favorite-btn active" onclick="removeFromFavorites('<%= item.productId %>')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                            <img src="<%= item.uploadimage %>" alt="<%= item.name %>" class="product-img">
+                            <div class="product-info" style="padding: 1rem;">
+                                <div class="product-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;"><%= item.name %></div>
+                                <div class="price-container" style="margin-bottom: 0;">
+                                    <div class="price">₹<%= item.price %></div>
+                                </div>
+                                <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                                    <button onclick="addToCartFromFav('<%= item.productId %>')" class="btn btn-primary" style="flex:1; font-size: 0.9rem; padding: 0.5rem;">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </section>
+    </main>
+</div>
+
+<style>
+.cart-dashboard {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    min-height: 60vh;
+}
+.cart-sidebar {
+    flex: 0 0 250px;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    height: fit-content;
+}
+.cart-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.cart-menu li {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+.cart-menu li:hover {
+    background: #f3f4f6;
+}
+.cart-menu li.active {
+    background: #eff6ff;
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+}
+.cart-content {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+.cart-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+}
+.cart-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.item-info {
+    flex: 1;
+}
+.item-info h3 {
+    margin: 0 0 0.5rem 0;
+}
+.qty-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    width: fit-content;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+.qty-control button {
+    border: none;
+    background: #f3f4f6;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+}
+.qty-control input {
+    width: 40px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid #d1d5db;
+    border-right: 1px solid #d1d5db;
+    outline: none;
+}
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+@media(max-width: 768px) {
+    .cart-dashboard {
+        flex-direction: column;
+    }
+    .cart-sidebar {
+        flex: none;
+        width: 100%;
+    }
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .item-actions {
+        width: 100%;
+        flex-direction: row;
+    }
+}
+</style>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('checkout-cart-btn')?.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/api/cart/create-razorpay-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        if(data.error) {
+            alert('Error: ' + data.error);
+            return;
+        }
+
+        const options = {
+            key: data.key_id,
+            amount: data.order.amount,
+            currency: "INR",
+            name: "Joelx Orbit",
+            description: "Cart Checkout",
+            order_id: data.order.id,
+            handler: async function (response) {
+                const verifyRes = await fetch('/api/cart/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                });
+                const verifyData = await verifyRes.json();
+                if(verifyData.success) {
+                    window.location.href = verifyData.redirectUrl;
+                } else {
+                    alert("Payment verification failed.");
+                }
+            },
+            theme: { color: "#2563eb" }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } catch (error) {
+        console.error(error);
+        alert('Something went wrong. Please try again.');
+    }
+});
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.cart-menu li').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId + '-section').classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+async function updateQty(productId, change) {
+    const qtyInput = document.getElementById('qty-' + productId);
+    let currentQty = parseInt(qtyInput.value);
+    let newQty = currentQty + change;
+    
+    if (newQty < 1) newQty = 1;
+    if (newQty > 10) newQty = 10;
+    
+    if (newQty === currentQty) return;
+    
+    try {
+        const res = await fetch('/api/cart/update', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ productId, quantity: newQty })
+        });
+        if (res.ok) {
+            qtyInput.value = newQty;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function removeFromCart(productId) {
+    if (!confirm('Remove this item from cart?')) return;
+    try {
+        const res = await fetch('/api/cart/remove/' + productId, { method: 'DELETE' });
+        if (res.ok) window.location.reload();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function removeFromFavorites(productId) {
+    if (!confirm('Remove from favorites?')) return;
+    try {
+        const res = await fetch('/api/favorites/remove/' + productId, { method: 'DELETE' });
+        if (res.ok) window.location.reload();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function addToCartFromFav(productId) {
+    try {
+        const res = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ productId, quantity: 1 })
+        });
+        if (res.status === 401) {
+            window.location.href = '/auth/login';
+            return;
+        }
+        if (res.ok) {
+            alert('Added to cart!');
+            removeFromFavorites(productId);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+</script>
+
+<%- include('../partials/footer.ejs') %>

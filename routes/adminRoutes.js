@@ -21,4 +21,9 @@ router.post('/delete-product/:id', adminController.getDeleteProduct);
 
 router.get('/view-orders', adminController.getViewOrders);
 
+router.get('/manage-banners', adminController.getManageBanners);
+router.get('/add-banner', adminController.getAddBanner);
+router.post('/add-banner', upload.single('bannerImage'), adminController.postAddBanner);
+router.post('/delete-banner/:id', adminController.getDeleteBanner);
+
 module.exports = router;

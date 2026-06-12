@@ -9,35 +9,148 @@
             style="color: white; padding: 1rem 2rem; font-size: 1.1rem; margin-top: 2rem;">Shop Now</a>
     </div>
 
-    <h2 style="margin-top: 4rem; border-left: 4px solid var(--primary); padding-left: 1rem;">Featured Products</h2>
-
-    <div class="product-grid">
-        <% products.forEach(product=> { %>
-            <div class="product-card">
-                <img src="<%= product.uploadimage %>" alt="<%= product.name %>" class="product-img">
-                <div class="product-info">
-                    <div class="product-category">
-                        <%= product.category %>
-                    </div>
-                    <div class="product-title">
-                        <%= product.name %>
-                    </div>
-
-                    <div class="price-container">
-                        <div class="price">₹<%= product.price %>
+    <% if (typeof banners !=='undefined' && banners.length> 0) { %>
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <% banners.forEach((banner, index)=> { %>
+                    <div class="carousel-card">
+                        <img src="<%= banner.uploadimage %>" alt="<%= banner.title %>" class="carousel-bg">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-content">
+                            <span class="carousel-category">
+                                <%= banner.category %>
+                            </span>
+                            <h2 class="carousel-title">
+                                <%= banner.title %>
+                            </h2>
+                            <p class="carousel-desc">
+                                <%= banner.description %>
+                            </p>
+                            <a href="<%= banner.buttonUrl %>" class="carousel-btn">
+                                <%= banner.buttonText %>
+                            </a>
                         </div>
-                        <% if (product.offer> 0) { %>
-                            <div class="offer">
-                                <%= product.offer %>% OFF
-                            </div>
-                            <% } %>
                     </div>
-
-                    <a href="/product/<%= product.productId %>" class="btn btn-primary"
-                        style="width: 100%; color: white;">View Details</a>
-                </div>
+                    <% }) %>
             </div>
-            <% }) %>
-    </div>
+            <div class="carousel-indicators">
+                <% banners.forEach((banner, index)=> { %>
+                    <span class="dot <%= index === 0 ? 'active' : '' %>"></span>
+                    <% }) %>
+            </div>
+        </div>
+        <% } %>
 
+
+
+            <h2 style="margin-top: 4rem; border-left: 4px solid var(--primary); padding-left: 1rem;">Featured Products
+            </h2>
+
+            <div class="product-grid">
+                <% products.forEach(product=> { %>
+                    <div class="product-card">
+                        <button class="favorite-btn" aria-label="Add to favorites" onclick="addToFav('<%= product.productId %>', this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <img src="<%= product.uploadimage %>" alt="<%= product.name %>" class="product-img">
+                        <div class="product-info">
+                            <div class="product-category">
+                                <%= product.category %>
+                            </div>
+                            <div class="product-title">
+                                <%= product.name %>
+                            </div>
+
+                            <div class="price-container">
+                                <div class="price">₹<%= product.price %>
+                                </div>
+                                <% if (product.offer> 0) { %>
+                                    <div class="offer">
+                                        <%= product.offer %>% OFF
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <a href="/product/<%= product.productId %>" class="btn btn-primary"
+                                style="width: 100%; color: white;">View Details</a>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const track = document.querySelector('.carousel-track');
+                    const cards = document.querySelectorAll('.carousel-card');
+                    const dots = document.querySelectorAll('.carousel-indicators .dot');
+
+                    if (!track || cards.length === 0) return;
+
+                    let currentIndex = 0;
+
+                    const updateDots = (index) => {
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        if (dots[index]) dots[index].classList.add('active');
+                        currentIndex = index;
+                    };
+
+                    track.addEventListener('scroll', () => {
+                        let index = Math.round(track.scrollLeft / track.clientWidth);
+                        if (index >= cards.length) index = cards.length - 1;
+                        if (index !== currentIndex) {
+                            updateDots(index);
+                        }
+                    });
+
+                    let autoSlideInterval = setInterval(slideNext, 2000);
+
+                    function slideNext() {
+                        let nextIndex = currentIndex + 1;
+                        if (nextIndex >= cards.length) {
+                            nextIndex = 0;
+                        }
+                        
+                        const trackPaddingLeft = parseInt(window.getComputedStyle(track).paddingLeft) || 0;
+                        track.scrollTo({
+                            left: cards[nextIndex].offsetLeft - trackPaddingLeft,
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    const pauseAutoSlide = () => clearInterval(autoSlideInterval);
+                    const resumeAutoSlide = () => {
+                        clearInterval(autoSlideInterval);
+                        autoSlideInterval = setInterval(slideNext, 2000);
+                    };
+
+                    track.addEventListener('mouseenter', pauseAutoSlide);
+                    track.addEventListener('mouseleave', resumeAutoSlide);
+                    track.addEventListener('touchstart', pauseAutoSlide, { passive: true });
+                    track.addEventListener('touchend', resumeAutoSlide, { passive: true });
+                });
+            </script>
+
+            <script>
+        async function addToFav(productId, btnElement) {
+            try {
+                const res = await fetch('/api/favorites/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+                if (res.status === 401) {
+                    window.location.href = '/auth/login';
+                    return;
+                }
+                if (res.ok) {
+                    btnElement.classList.add('active');
+                    alert('Added to favorites!');
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+    </script>
     <%- include('../partials/footer.ejs') %>

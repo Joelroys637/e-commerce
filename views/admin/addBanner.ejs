@@ -1,0 +1,57 @@
+<%- include('../partials/header.ejs', { pageTitle: 'Add Banner' }) %>
+
+    <div class="admin-layout" style="margin-top: 2rem;">
+        <%- include('../partials/admin-sidebar.ejs') %>
+
+            <div class="admin-content">
+                <h2 style="margin-bottom: 2rem;">Add New Banner</h2>
+
+                <% if (typeof error !=='undefined' && error) { %>
+                    <div class="alert alert-danger">
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <form action="/admin/add-banner" method="POST" enctype="multipart/form-data"
+                            style="max-width: 600px;">
+                            
+                            <div class="form-group">
+                                <label for="category">Category (e.g., PLANNERKART)</label>
+                                <input type="text" id="category" name="category" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="title">Title (e.g., Compare packages with clarity)</label>
+                                <input type="text" id="title" name="title" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="buttonText">Button Text (e.g., Compare now)</label>
+                                    <input type="text" id="buttonText" name="buttonText" class="form-control" required>
+                                </div>
+
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="buttonUrl">Button URL</label>
+                                    <input type="text" id="buttonUrl" name="buttonUrl" class="form-control" required value="#">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bannerImage">Banner Image Upload *Less then 1MB(PNG, JPG)</label>
+                                <input type="file" id="bannerImage" name="bannerImage" class="form-control"
+                                    accept="image/png, image/jpeg, image/jpg" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="color: white; width: 100%;">Create
+                                Banner</button>
+                        </form>
+            </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>

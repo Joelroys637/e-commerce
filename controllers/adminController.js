@@ -1,5 +1,6 @@
 const { addProduct, getAllProducts, updateProduct, deleteProduct, getProductById } = require('../models/productModel');
 const { getAllOrders } = require('../models/orderModel');
+const { addBanner, getAllBanners, deleteBanner } = require('../models/bannerModel');
 
 const getDashboard = async (req, res) => {
     const products = await getAllProducts();
@@ -84,6 +85,51 @@ const getViewOrders = async (req, res) => {
     res.render('admin/viewOrders', { orders });
 };
 
+const getManageBanners = async (req, res) => {
+    const banners = await getAllBanners();
+    res.render('admin/manageBanners', { banners });
+};
+
+const getAddBanner = (req, res) => {
+    res.render('admin/addBanner', { error: null });
+};
+
+const postAddBanner = async (req, res) => {
+    const { category, title, description, buttonText, buttonUrl } = req.body;
+
+    try {
+        if (!req.file) {
+            throw new Error("Banner Image is required.");
+        }
+
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const imageUrl = `data:${req.file.mimetype};base64,${b64}`;
+
+        await addBanner({
+            category,
+            title,
+            description,
+            buttonText,
+            buttonUrl,
+            uploadimage: imageUrl
+        });
+
+        res.redirect('/admin/manage-banners');
+    } catch (error) {
+        res.render('admin/addBanner', { error: error.message });
+    }
+};
+
+const getDeleteBanner = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await deleteBanner(id);
+        res.redirect('/admin/manage-banners');
+    } catch (error) {
+        res.redirect('/admin/manage-banners');
+    }
+};
+
 module.exports = {
     getDashboard,
     getAddProduct,
@@ -92,5 +138,9 @@ module.exports = {
     getUpdateProduct,
     postUpdateProduct,
     getDeleteProduct,
-    getViewOrders
+    getViewOrders,
+    getManageBanners,
+    getAddBanner,
+    postAddBanner,
+    getDeleteBanner
 };

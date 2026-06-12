@@ -1,18 +1,92 @@
 <%- include('../partials/header.ejs', { pageTitle: 'All Products' }) %>
 
-    <div
-        style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div class="shop-header">
         <h2 style="border-left: 4px solid var(--primary); padding-left: 1rem; margin: 0;">All Products</h2>
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by product name..."
-            style="max-width: 300px;">
+        <div style="display: flex; gap: 0.5rem; align-items: center; max-width: 300px; width: 100%;">
+            <button id="mobileFilterBtn" class="mobile-only-btn" style="padding: 0.4rem 0.6rem; border: 1px solid #d1d5db; border-radius: 8px; background: white; cursor: pointer; color: var(--text-main);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+            </button>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by product name..." style="flex-grow: 1;">
+        </div>
     </div>
 
-    <div class="product-grid" id="productGrid">
+    <div class="shop-layout">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar Filter -->
+        <aside class="filter-sidebar" id="filterSidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem;">
+                <h3 class="filter-title" style="margin: 0; border: none; padding: 0;">Filters</h3>
+                <button id="closeFilterBtn" class="mobile-only-btn" style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-main);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Category</h4>
+                <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                    <% categories.forEach(category => { %>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" class="category-filter" value="<%= category %>">
+                            <span><%= category %></span>
+                        </label>
+                    <% }) %>
+                <% } else { %>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">No categories available</p>
+                <% } %>
+            </div>
+
+            <div class="filter-group">
+                <h4>Price Range</h4>
+                <% 
+                  let maxProductPrice = 50000;
+                  if (typeof products !== 'undefined' && products.length > 0) {
+                      maxProductPrice = Math.max(...products.map(p => {
+                          let priceText = (p.price || '').toString().replace(/[^0-9.]/g, '');
+                          return parseFloat(priceText) || 0;
+                      }));
+                      maxProductPrice = Math.ceil(maxProductPrice / 1000) * 1000;
+                  }
+                  if (maxProductPrice < 1000 || !isFinite(maxProductPrice)) maxProductPrice = 50000;
+                %>
+                <div class="range-slider-container">
+                    <div class="slider-track" id="sliderTrack"></div>
+                    <input type="range" id="minRange" min="0" max="<%= maxProductPrice %>" value="0" step="100">
+                    <input type="range" id="maxRange" min="0" max="<%= maxProductPrice %>" value="<%= maxProductPrice %>" step="100">
+                </div>
+                <div class="price-inputs" style="margin-top: 1.5rem;">
+                    <input type="number" id="minPrice" placeholder="Min ₹" class="form-control" value="0">
+                    <span class="price-separator">-</span>
+                    <input type="number" id="maxPrice" placeholder="Max ₹" class="form-control" value="<%= maxProductPrice %>">
+                </div>
+            </div>
+            
+            <button id="clearFiltersBtn" class="btn btn-outline" style="width: 100%; margin-top: 1rem; background: white; border: 1px solid #d1d5db; color: var(--text-main); padding: 0.6rem; border-radius: 8px; cursor: pointer;">Clear Filters</button>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="product-list-container">
+            <div class="product-grid" id="productGrid">
         <% if (products.length===0) { %>
             <p>No products available yet. Check back later!</p>
             <% } else { %>
                 <% products.forEach(product=> { %>
                     <div class="product-card">
+                        <button class="favorite-btn" aria-label="Add to favorites" onclick="addToFav('<%= product.productId %>', this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
                         <img src="<%= product.uploadimage %>" alt="<%= product.name %>" class="product-img">
                         <div class="product-info">
                             <div class="product-category">
@@ -37,23 +111,179 @@
                         </div>
                     </div>
                     <% }) %>
-                        <% } %>
+                <% } %>
+            </div>
+            <div id="noProductsMessage" style="display: none; padding: 2rem; text-align: center; color: var(--text-muted); width: 100%; background: white; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-top: 1rem;">
+                No products found matching your filters.
+            </div>
+        </div>
     </div>
 
     <script>
-        document.getElementById('searchInput').addEventListener('input', function (e) {
-            const searchTerm = e.target.value.toLowerCase();
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const categoryCheckboxes = document.querySelectorAll('.category-filter');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
             const products = document.querySelectorAll('.product-card');
+            const noProductsMessage = document.getElementById('noProductsMessage');
 
-            products.forEach(product => {
-                const title = product.querySelector('.product-title').innerText.toLowerCase();
-                if (title.includes(searchTerm)) {
-                    product.style.display = 'flex'; // or keep original display, usually block or flex
+            function filterProducts() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const minPrice = parseFloat(minPriceInput.value) || 0;
+                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+                
+                const selectedCategories = Array.from(categoryCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value.toLowerCase());
+
+                let visibleCount = 0;
+
+                products.forEach(product => {
+                    const title = product.querySelector('.product-title').innerText.toLowerCase();
+                    const category = product.querySelector('.product-category').innerText.toLowerCase().trim();
+                    
+                    // Extract price, removing any non-numeric characters (except decimal point)
+                    const priceText = product.querySelector('.price').innerText.replace(/[^0-9.]/g, '');
+                    const price = parseFloat(priceText) || 0;
+
+                    const matchesSearch = title.includes(searchTerm);
+                    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+                    const matchesPrice = price >= minPrice && price <= maxPrice;
+
+                    if (matchesSearch && matchesCategory && matchesPrice) {
+                        product.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+                
+                if (visibleCount === 0 && products.length > 0) {
+                    noProductsMessage.style.display = 'block';
                 } else {
-                    product.style.display = 'none';
+                    noProductsMessage.style.display = 'none';
                 }
-            });
+            }
+
+            const minRange = document.getElementById('minRange');
+            const maxRange = document.getElementById('maxRange');
+            const sliderTrack = document.getElementById('sliderTrack');
+            
+            function updateSliderTrack() {
+                if (!minRange || !maxRange || !sliderTrack) return;
+                const maxAllowedPrice = parseInt(maxRange.max) || 50000;
+                const minVal = parseInt(minRange.value) || 0;
+                const maxVal = parseInt(maxRange.value) || maxAllowedPrice;
+                const percent1 = (minVal / maxAllowedPrice) * 100;
+                const percent2 = (maxVal / maxAllowedPrice) * 100;
+                sliderTrack.style.left = percent1 + "%";
+                sliderTrack.style.right = (100 - percent2) + "%";
+            }
+
+            if (minRange && maxRange) {
+                minRange.addEventListener('input', () => {
+                    let minVal = parseInt(minRange.value);
+                    let maxVal = parseInt(maxRange.value);
+                    if (minVal > maxVal - 100) {
+                        minRange.value = maxVal - 100;
+                        minVal = maxVal - 100;
+                    }
+                    if (minPriceInput) minPriceInput.value = minVal;
+                    updateSliderTrack();
+                    filterProducts();
+                });
+
+                maxRange.addEventListener('input', () => {
+                    let minVal = parseInt(minRange.value);
+                    let maxVal = parseInt(maxRange.value);
+                    if (maxVal < minVal + 100) {
+                        maxRange.value = minVal + 100;
+                        maxVal = minVal + 100;
+                    }
+                    if (maxPriceInput) maxPriceInput.value = maxVal;
+                    updateSliderTrack();
+                    filterProducts();
+                });
+                updateSliderTrack();
+            }
+
+            // Event Listeners
+            if (searchInput) searchInput.addEventListener('input', filterProducts);
+            categoryCheckboxes.forEach(cb => cb.addEventListener('change', filterProducts));
+            
+            if (minPriceInput) {
+                minPriceInput.addEventListener('input', () => {
+                    if (minRange) minRange.value = minPriceInput.value || 0;
+                    updateSliderTrack();
+                    filterProducts();
+                });
+            }
+            if (maxPriceInput) {
+                maxPriceInput.addEventListener('input', () => {
+                    if (maxRange) maxRange.value = maxPriceInput.value || (maxRange.max);
+                    updateSliderTrack();
+                    filterProducts();
+                });
+            }
+            
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    categoryCheckboxes.forEach(cb => cb.checked = false);
+                    if (minPriceInput) minPriceInput.value = 0;
+                    if (maxPriceInput) maxPriceInput.value = maxRange ? maxRange.max : 50000;
+                    if (minRange) minRange.value = 0;
+                    if (maxRange) maxRange.value = maxRange.max;
+                    updateSliderTrack();
+                    filterProducts();
+                });
+            }
+
+            // Mobile Filter Popup Logic
+            const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+            const closeFilterBtn = document.getElementById('closeFilterBtn');
+            const filterSidebar = document.getElementById('filterSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (mobileFilterBtn) {
+                mobileFilterBtn.addEventListener('click', () => {
+                    filterSidebar.classList.add('active');
+                    sidebarOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                });
+            }
+
+            const closeSidebar = () => {
+                if (filterSidebar) filterSidebar.classList.remove('active');
+                if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            if (closeFilterBtn) closeFilterBtn.addEventListener('click', closeSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
         });
+
+        async function addToFav(productId, btnElement) {
+            try {
+                const res = await fetch('/api/favorites/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+                if (res.status === 401) {
+                    window.location.href = '/auth/login';
+                    return;
+                }
+                if (res.ok) {
+                    btnElement.classList.add('active');
+                    alert('Added to favorites!');
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
     </script>
 
     <%- include('../partials/footer.ejs') %>
