@@ -2,6 +2,106 @@
 <footer>
     <p>&copy; <%= new Date().getFullYear() %> Joelx Orbit | All rights reserved Contact: +91 8838343971.</p>
 </footer>
-</body>
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
 
+    <style>
+    .custom-toast {
+        background-color: #d1fae5;
+        color: #065f46;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 280px;
+        position: relative;
+        overflow: hidden;
+        transform: translateX(120%);
+        animation: toast-slide-in 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .custom-toast.error {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    .toast-icon {
+        background: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .toast-icon.success { color: #10b981; }
+    .toast-icon.error { color: #ef4444; }
+    .toast-content {
+        flex-grow: 1;
+        font-weight: 500;
+        font-size: 1.05rem;
+    }
+    .toast-close {
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+    .toast-close:hover { opacity: 1; }
+    .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: #10b981;
+        width: 100%;
+        animation: toast-progress 3s linear forwards;
+    }
+    .custom-toast.error .toast-progress {
+        background: #ef4444;
+    }
+
+    @keyframes toast-slide-in {
+        from { transform: translateX(120%); }
+        to { transform: translateX(0); }
+    }
+    @keyframes toast-slide-out {
+        from { transform: translateX(0); }
+        to { transform: translateX(120%); }
+    }
+    @keyframes toast-progress {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
+    </style>
+
+    <script>
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `custom-toast ${type}`;
+        
+        const iconSvg = type === 'success' 
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+        toast.innerHTML = `
+            <div class="toast-icon ${type}">
+                ${iconSvg}
+            </div>
+            <div class="toast-content">${message}</div>
+            <div class="toast-close" onclick="this.parentElement.remove()">×</div>
+            <div class="toast-progress"></div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'toast-slide-out 0.4s forwards';
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+    </script>
+</body>
 </html>

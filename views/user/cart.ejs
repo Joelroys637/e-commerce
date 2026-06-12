@@ -211,7 +211,7 @@ document.getElementById('checkout-cart-btn')?.addEventListener('click', async ()
         
         const data = await response.json();
         if(data.error) {
-            alert('Error: ' + data.error);
+            showToast('Error: ' + data.error, 'error');
             return;
         }
 
@@ -236,7 +236,7 @@ document.getElementById('checkout-cart-btn')?.addEventListener('click', async ()
                 if(verifyData.success) {
                     window.location.href = verifyData.redirectUrl;
                 } else {
-                    alert("Payment verification failed.");
+                    showToast("Payment verification failed.", "error");
                 }
             },
             theme: { color: "#2563eb" }
@@ -246,7 +246,7 @@ document.getElementById('checkout-cart-btn')?.addEventListener('click', async ()
         rzp.open();
     } catch (error) {
         console.error(error);
-        alert('Something went wrong. Please try again.');
+        showToast('Something went wrong. Please try again.', 'error');
     }
 });
 
@@ -314,7 +314,7 @@ async function addToCartFromFav(productId) {
             return;
         }
         if (res.ok) {
-            alert('Added to cart!');
+            showToast('Added to cart!');
             removeFromFavorites(productId);
         }
     } catch (e) {

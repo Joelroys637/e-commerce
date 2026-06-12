@@ -124,14 +124,14 @@
                     return;
                 }
                 const data = await res.json();
-                if (data.success) {
-                    alert('Added to cart successfully!');
+                if (res.ok) {
+                    showToast('Added to cart successfully!');
                 } else {
-                    alert('Error adding to cart.');
+                    showToast('Error adding to cart.', 'error');
                 }
-            } catch (error) {
-                console.error(error);
-                alert('Something went wrong.');
+            } catch (err) {
+                console.error(err);
+                showToast('Something went wrong.', 'error');
             }
         }
 
@@ -154,7 +154,7 @@
 
                 const data = await response.json();
                 if(data.error) {
-                    alert('Error: ' + data.error);
+                    showToast('Error: ' + data.error, 'error');
                     return;
                 }
 
@@ -181,7 +181,7 @@
                         if(verifyData.success) {
                             window.location.href = verifyData.redirectUrl;
                         } else {
-                            alert("Payment verification failed. Please contact support.");
+                            showToast("Payment verification failed. Please contact support.", "error");
                         }
                     },
                     theme: { color: "#2563eb" }
@@ -192,7 +192,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert('Something went wrong. Please try again.');
+                showToast('Something went wrong. Please try again.', 'error');
             }
         });
     </script>

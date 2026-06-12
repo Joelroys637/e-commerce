@@ -234,6 +234,7 @@ main {
   background: #dcfce7;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 /* Favorite Button */
@@ -911,6 +912,20 @@ footer {
   /* Shop Layout Mobile Adjustments */
   .shop-layout {
     flex-direction: column;
+  }
+  
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .product-card .product-img {
+    height: 180px; /* Make images a bit smaller so 2 fit better */
+  }
+  
+  .product-card .product-title {
+    font-size: 1rem;
   }
   
   .mobile-only-btn {
