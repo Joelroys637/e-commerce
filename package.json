@@ -1,7 +1,7 @@
 {
   "name": "e-commerce",
   "version": "1.0.0",
-  "description": "",
+  "description": "A full-stack e-commerce web application built using Express, EJS, Firebase, and Razorpay.",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
